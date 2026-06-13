@@ -67,8 +67,10 @@ exports.getCase = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Case not found' });
     }
 
-    if (req.user.role === 'Agent' && caseData.assignedTo.toString() !== req.user.id.toString()) {
-      return res.status(403).json({ success: false, message: 'Not authorized to access this case' });
+    if (req.user.role === 'Agent') {
+      if (!caseData.assignedTo || caseData.assignedTo._id.toString() !== req.user.id.toString()) {
+        return res.status(403).json({ success: false, message: 'Not authorized to access this case' });
+      }
     }
 
     const documents = await Document.find({ caseId: caseData._id }).populate('uploadedBy', 'name email');
@@ -185,7 +187,7 @@ exports.updateCaseStatus = async (req, res, next) => {
     }
 
     if (req.user.role === 'Agent') {
-      if (caseData.assignedTo.toString() !== req.user.id.toString()) {
+      if (!caseData.assignedTo || caseData.assignedTo.toString() !== req.user.id.toString()) {
         return res.status(403).json({ success: false, message: 'Not authorized to update this case' });
       }
       if (!['In Progress', 'Submitted'].includes(status)) {
@@ -231,8 +233,10 @@ exports.addNote = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Case not found' });
     }
 
-    if (req.user.role === 'Agent' && caseData.assignedTo.toString() !== req.user.id.toString()) {
-      return res.status(403).json({ success: false, message: 'Not authorized to access this case' });
+    if (req.user.role === 'Agent') {
+      if (!caseData.assignedTo || caseData.assignedTo.toString() !== req.user.id.toString()) {
+        return res.status(403).json({ success: false, message: 'Not authorized to access this case' });
+      }
     }
 
     caseData.notes.push(note);

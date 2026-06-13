@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Container,
   Box,
   Typography,
   TextField,
@@ -21,13 +20,24 @@ import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useEffect } from 'react';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [selectedRole, setSelectedRole] = useState('Manager');
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  // Pre-fill credentials based on selected role
+  useEffect(() => {
+    if (selectedRole === 'Manager') {
+      setFormData({ email: 'manager@example.com', password: 'password123' });
+    } else {
+      setFormData({ email: 'agent@example.com', password: 'password123' });
+    }
+  }, [selectedRole]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -273,26 +283,42 @@ const Login = () => {
               <Button
                 variant="contained"
                 disableElevation
+                onClick={() => setSelectedRole('Manager')}
                 sx={{
                   flex: 1,
                   borderRadius: 2.5,
                   textTransform: 'none',
                   fontWeight: 600,
-                  background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(99, 102, 241, 0.1) 100%)',
-                  color: '#818cf8',
-                  border: '1px solid rgba(99, 102, 241, 0.5)',
+                  background: selectedRole === 'Manager'
+                    ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(99, 102, 241, 0.1) 100%)'
+                    : 'transparent',
+                  color: selectedRole === 'Manager'
+                    ? '#818cf8'
+                    : '#94a3b8',
+                  border: selectedRole === 'Manager'
+                    ? '1px solid rgba(99, 102, 241, 0.5)'
+                    : 'none',
                 }}
               >
                 Manager
               </Button>
               <Button
                 variant="text"
+                onClick={() => setSelectedRole('Agent')}
                 sx={{
                   flex: 1,
                   borderRadius: 2.5,
                   textTransform: 'none',
                   fontWeight: 600,
-                  color: '#94a3b8',
+                  background: selectedRole === 'Agent'
+                    ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(99, 102, 241, 0.1) 100%)'
+                    : 'transparent',
+                  color: selectedRole === 'Agent'
+                    ? '#818cf8'
+                    : '#94a3b8',
+                  border: selectedRole === 'Agent'
+                    ? '1px solid rgba(99, 102, 241, 0.5)'
+                    : 'none',
                 }}
               >
                 Agent

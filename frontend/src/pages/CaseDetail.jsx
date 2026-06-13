@@ -53,8 +53,13 @@ const CaseDetail = () => {
       setDocuments(res.data.data.documents);
       setComments(res.data.data.comments);
       setAuditLogs(res.data.data.auditLogs);
+      setMessage({ type: '', text: '' });
     } catch (err) {
       console.error(err);
+      setMessage({
+        type: 'error',
+        text: err.response?.data?.message || 'Failed to load case'
+      });
     } finally {
       setLoading(false);
     }
@@ -302,15 +307,22 @@ const CaseDetail = () => {
           </Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
             {getAvailableStatuses().map((status) => {
-              const isAllowed =
-                (user.role === 'Agent' && ['In Progress', 'Submitted'].includes(status)) ||
-                (user.role === 'Manager' && ['Cleared', 'Discrepant', 'Assigned'].includes(status));
+              // Determine if current role is allowed to perform this status change
+              let isAllowed = false;
+              if (user.role === 'Agent') {
+                isAllowed = ['In Progress', 'Submitted'].includes(status);
+              } else if (user.role === 'Manager') {
+                isAllowed = ['Cleared', 'Discrepant'].includes(status);
+                // Also allow Assigned status if coming from New (but that's handled by assign case function)
+              }
+
               if (!isAllowed) return null;
 
               let buttonColor = 'primary';
               if (status === 'Cleared') buttonColor = 'success';
               if (status === 'Discrepant') buttonColor = 'error';
               if (status === 'In Progress') buttonColor = 'info';
+              if (status === 'Submitted') buttonColor = 'warning';
 
               return (
                 <Button
@@ -319,6 +331,7 @@ const CaseDetail = () => {
                   size="large"
                   color={buttonColor}
                   onClick={() => handleStatusChange(status)}
+                  className="gradient-btn"
                   sx={{ py: 1.2, px: 3, fontWeight: 700 }}
                 >
                   Mark as {status}

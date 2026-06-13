@@ -29,7 +29,6 @@ const seedData = async () => {
 
     await User.create(users);
     console.log('Users added');
-
     console.log('Seed complete!');
     process.exit();
   } catch (err) {

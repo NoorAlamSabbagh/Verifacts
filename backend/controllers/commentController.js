@@ -16,8 +16,10 @@ exports.addComment = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Case not found' });
     }
 
-    if (req.user.role === 'Agent' && caseData.assignedTo.toString() !== req.user.id.toString()) {
-      return res.status(403).json({ success: false, message: 'Not authorized to access this case' });
+    if (req.user.role === 'Agent') {
+      if (!caseData.assignedTo || caseData.assignedTo.toString() !== req.user.id.toString()) {
+        return res.status(403).json({ success: false, message: 'Not authorized to access this case' });
+      }
     }
 
     const comment = await Comment.create({
