@@ -5,8 +5,11 @@ import {
   Typography,
   TextField,
   Button,
-  Alert
+  Alert,
+  Paper,
+  Grid,
 } from '@mui/material';
+import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 
@@ -15,7 +18,7 @@ const NewCase = () => {
     clientName: '',
     subject: '',
     caseType: '',
-    dueDate: ''
+    dueDate: '',
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -36,60 +39,104 @@ const NewCase = () => {
   };
 
   return (
-    <Container>
-      <Button onClick={() => navigate('/')} sx={{ mb: 2 }}>
-        &larr; Back to Cases
+    <Container maxWidth="md">
+      <Button
+        startIcon={<ArrowBackIosNewOutlinedIcon />}
+        onClick={() => navigate('/')}
+        sx={{ mb: 3, fontWeight: 600, color: '#94a3b8' }}
+      >
+        Back to Cases
       </Button>
-      <Typography variant="h4" sx={{ mb: 3 }}>New Case</Typography>
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 600 }}>
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          label="Client Name"
-          name="clientName"
-          value={formData.clientName}
-          onChange={handleChange}
-        />
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          label="Subject"
-          name="subject"
-          value={formData.subject}
-          onChange={handleChange}
-        />
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          label="Case Type"
-          name="caseType"
-          value={formData.caseType}
-          onChange={handleChange}
-        />
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          label="Due Date"
-          name="dueDate"
-          type="date"
-          InputLabelProps={{ shrink: true }}
-          value={formData.dueDate}
-          onChange={handleChange}
-        />
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          sx={{ mt: 3 }}
-        >
-          Create Case
-        </Button>
-      </Box>
+
+      <Paper sx={{ p: 4, borderRadius: 3 }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: '#f8fafc' }}>
+          Create New Case
+        </Typography>
+        <Typography variant="body1" sx={{ color: '#94a3b8', mb: 4 }}>
+          Fill in the details below to create a new case
+        </Typography>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        <Box component="form" onSubmit={handleSubmit}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                label="Client Name"
+                name="clientName"
+                value={formData.clientName}
+                onChange={handleChange}
+                variant="outlined"
+                size="large"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                label="Case Type"
+                name="caseType"
+                value={formData.caseType}
+                onChange={handleChange}
+                variant="outlined"
+                size="large"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                label="Subject"
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
+                variant="outlined"
+                size="large"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                label="Due Date"
+                name="dueDate"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={formData.dueDate}
+                onChange={handleChange}
+                variant="outlined"
+                size="large"
+              />
+            </Grid>
+          </Grid>
+
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            size="large"
+            className="gradient-btn"
+            sx={{
+              mt: 4,
+              py: 1.8,
+              fontWeight: 700,
+              fontSize: '1rem',
+            }}
+          >
+            Create Case
+          </Button>
+        </Box>
+      </Paper>
     </Container>
   );
 };
