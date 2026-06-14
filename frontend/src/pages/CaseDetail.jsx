@@ -16,8 +16,6 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
-  CircularProgress,
-  Alert,
   IconButton,
   Grid,
 } from '@mui/material';
@@ -29,6 +27,7 @@ import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api';
 import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../context/ToastContext';
 
 const CaseDetail = () => {
   const { id } = useParams();
@@ -41,8 +40,8 @@ const CaseDetail = () => {
   const [newComment, setNewComment] = useState('');
   const [newNote, setNewNote] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
-  const [message, setMessage] = useState({ type: '', text: '' });
   const { user } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const fetchCase = async () => {
@@ -53,13 +52,9 @@ const CaseDetail = () => {
       setDocuments(res.data.data.documents);
       setComments(res.data.data.comments);
       setAuditLogs(res.data.data.auditLogs);
-      setMessage({ type: '', text: '' });
     } catch (err) {
       console.error(err);
-      setMessage({
-        type: 'error',
-        text: err.response?.data?.message || 'Failed to load case'
-      });
+      showToast(err.response?.data?.message || 'Failed to load case', 'error');
     } finally {
       setLoading(false);
     }
@@ -85,9 +80,9 @@ const CaseDetail = () => {
     try {
       await api.put(`/cases/${id}/assign`, { assignedTo: agentId });
       fetchCase();
-      setMessage({ type: 'success', text: 'Case assigned successfully' });
+      showToast('Case assigned successfully!', 'success');
     } catch (err) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to assign case' });
+      showToast(err.response?.data?.message || 'Failed to assign case', 'error');
     }
   };
 
@@ -95,9 +90,9 @@ const CaseDetail = () => {
     try {
       await api.put(`/cases/${id}/status`, { status, note });
       fetchCase();
-      setMessage({ type: 'success', text: 'Status updated successfully' });
+      showToast('Status updated successfully!', 'success');
     } catch (err) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to update status' });
+      showToast(err.response?.data?.message || 'Failed to update status', 'error');
     }
   };
 
@@ -107,9 +102,9 @@ const CaseDetail = () => {
       await api.post(`/cases/${id}/comments`, { content: newComment });
       setNewComment('');
       fetchCase();
-      setMessage({ type: 'success', text: 'Comment added successfully' });
+      showToast('Comment added successfully!', 'success');
     } catch (err) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to add comment' });
+      showToast(err.response?.data?.message || 'Failed to add comment', 'error');
     }
   };
 
@@ -119,9 +114,9 @@ const CaseDetail = () => {
       await api.put(`/cases/${id}/note`, { note: newNote });
       setNewNote('');
       fetchCase();
-      setMessage({ type: 'success', text: 'Note added successfully' });
+      showToast('Note added successfully!', 'success');
     } catch (err) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to add note' });
+      showToast(err.response?.data?.message || 'Failed to add note', 'error');
     }
   };
 
@@ -135,9 +130,9 @@ const CaseDetail = () => {
       });
       setSelectedFile(null);
       fetchCase();
-      setMessage({ type: 'success', text: 'Document uploaded successfully' });
+      showToast('Document uploaded successfully!', 'success');
     } catch (err) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to upload document' });
+      showToast(err.response?.data?.message || 'Failed to upload document', 'error');
     }
   };
 
@@ -173,11 +168,7 @@ const CaseDetail = () => {
   };
 
   if (loading) {
-    return (
-      <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
-        <CircularProgress size={60} sx={{ color: '#6366f1' }} />
-      </Container>
-    );
+    return null;
   }
 
   if (!caseData) {
@@ -197,12 +188,6 @@ const CaseDetail = () => {
       >
         Back to Cases
       </Button>
-
-      {message.text && (
-        <Alert severity={message.type} sx={{ mb: 3, borderRadius: 2 }}>
-          {message.text}
-        </Alert>
-      )}
 
       {/* Case Header */}
       <Paper sx={{ p: 4, mb: 4, borderRadius: 3 }}>

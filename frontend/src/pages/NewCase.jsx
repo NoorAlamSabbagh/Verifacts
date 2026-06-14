@@ -5,13 +5,13 @@ import {
   Typography,
   TextField,
   Button,
-  Alert,
   Paper,
   Grid,
 } from '@mui/material';
 import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import { useToast } from '../context/ToastContext';
 
 const NewCase = () => {
   const [formData, setFormData] = useState({
@@ -20,8 +20,8 @@ const NewCase = () => {
     caseType: '',
     dueDate: '',
   });
-  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,12 +29,12 @@ const NewCase = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     try {
       await api.post('/cases', formData);
+      showToast('Case created successfully!', 'success');
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create case');
+      showToast(err.response?.data?.message || 'Failed to create case', 'error');
     }
   };
 
@@ -55,12 +55,6 @@ const NewCase = () => {
         <Typography variant="body1" sx={{ color: '#94a3b8', mb: 4 }}>
           Fill in the details below to create a new case
         </Typography>
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
-            {error}
-          </Alert>
-        )}
 
         <Box component="form" onSubmit={handleSubmit}>
           <Grid container spacing={3}>

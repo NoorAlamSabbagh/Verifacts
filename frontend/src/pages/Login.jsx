@@ -4,7 +4,6 @@ import {
   Typography,
   TextField,
   Button,
-  Alert,
   Paper,
   Avatar,
   IconButton,
@@ -20,14 +19,15 @@ import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../context/ToastContext';
 import { useEffect } from 'react';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState('Manager');
   const { login } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   // Pre-fill credentials based on selected role
@@ -46,12 +46,12 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     try {
       await login(formData.email, formData.password);
+      showToast('Login successful!', 'success');
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      showToast(err.response?.data?.message || 'Login failed', 'error');
     }
   };
 
@@ -325,12 +325,6 @@ const Login = () => {
                 Agent
               </Button>
             </Box>
-
-            {error && (
-              <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
-                {error}
-              </Alert>
-            )}
 
             <Box component="form" onSubmit={handleSubmit} sx={{ mb: 3 }}>
               <TextField
