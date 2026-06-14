@@ -5,6 +5,8 @@ const cors = require('cors');
 const path = require('path');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error');
+const swaggerUi = require('swagger-ui-express');
+const specs = require('./swagger');
 
 dotenv.config();
 
@@ -24,6 +26,9 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Swagger documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+
 app.use('/api/auth', auth);
 app.use('/api/cases', cases);
 
@@ -33,6 +38,7 @@ const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  console.log(`API Docs: http://localhost:${PORT}/api-docs`);
 });
 
 process.on('unhandledRejection', (err, promise) => {

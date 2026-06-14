@@ -20,6 +20,7 @@ A complete MERN stack application for tracking cases with role-based access cont
 - **Frontend**: React 18, Vite, Material UI (MUI) 5, React Router 6, Axios
 - **Backend**: Node.js, Express.js, Mongoose, JWT, Express Validator, Multer, Morgan
 - **Database**: MongoDB Atlas
+- **API Docs**: Swagger/OpenAPI (swagger-jsdoc, swagger-ui-express)
 - **Hosting**: Vercel (for both frontend and backend)
 
 ## 📋 Complete Workflow Guide
@@ -105,6 +106,9 @@ New → Assigned → In Progress → Submitted → [ Cleared | Discrepant ]
    ```
    Frontend: http://localhost:5174
 
+9. **Access API Documentation**
+   - Local API Docs: http://localhost:5000/api-docs
+
 ## 🔑 Test Credentials
 
 **Manager Account**:
@@ -142,6 +146,7 @@ New → Assigned → In Progress → Submitted → [ Cleared | Discrepant ]
    - Get your MongoDB Atlas connection string from the Atlas dashboard
 5. **Deploy!** (Vercel will auto-detect Node.js and deploy)
 6. **Copy your backend URL** (e.g., `https://your-app-name-backend.vercel.app`)
+7. **Access API Docs in Production**: https://your-app-name-backend.vercel.app/api-docs
 
 ---
 
