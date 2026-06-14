@@ -9,7 +9,6 @@ import {
   Avatar,
   IconButton,
   InputAdornment,
-  CircularProgress,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
@@ -28,7 +27,6 @@ const Login = () => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState('Manager');
-  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -49,14 +47,11 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
     try {
       await login(formData.email, formData.password);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -394,21 +389,13 @@ const Login = () => {
                 fullWidth
                 variant="contained"
                 size="large"
-                disabled={loading}
                 className="gradient-btn"
                 sx={{
                   mt: 3,
                   py: 1.8,
                 }}
               >
-                {loading ? (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <CircularProgress size={20} sx={{ color: '#fff' }} />
-                    Signing In...
-                  </Box>
-                ) : (
-                  'Sign In To Case Tracker'
-                )}
+                Sign In To Case Tracker
               </Button>
             </Box>
 

@@ -18,7 +18,6 @@ import {
   InputLabel,
   Pagination,
   Chip,
-  CircularProgress,
   Card,
   CardContent,
   Grid,
@@ -31,7 +30,6 @@ import { useAuth } from '../hooks/useAuth';
 const CaseList = () => {
   const [cases, setCases] = useState([]);
   const [agents, setAgents] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ search: '', status: '', assignedTo: '' });
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 0 });
   const { user } = useAuth();
@@ -39,7 +37,6 @@ const CaseList = () => {
 
   const fetchCases = async () => {
     try {
-      setLoading(true);
       const params = {
         page: pagination.page,
         limit: pagination.limit,
@@ -50,8 +47,6 @@ const CaseList = () => {
       setPagination({ ...pagination, total: res.data.pagination.total, pages: res.data.pagination.pages });
     } catch (err) {
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -101,14 +96,6 @@ const CaseList = () => {
     inProgress: cases.filter((c) => c.status === 'In Progress').length,
     submitted: cases.filter((c) => c.status === 'Submitted').length,
   };
-
-  if (loading) {
-    return (
-      <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
-        <CircularProgress size={60} sx={{ color: '#6366f1' }} />
-      </Container>
-    );
-  }
 
   return (
     <Container maxWidth="xl">

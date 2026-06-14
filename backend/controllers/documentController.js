@@ -1,7 +1,26 @@
 const Document = require('../models/Document');
 const Case = require('../models/Case');
 const multer = require('multer');
-const { storage, cloudinary } = require('../config/cloudinary');
+const path = require('path');
+
+// Check if we should use Cloudinary or local storage
+const useCloudinary = process.env.USE_CLOUDINARY === 'true';
+
+let storage;
+if (useCloudinary) {
+  const { storage: cloudinaryStorage } = require('../config/cloudinary');
+  storage = cloudinaryStorage;
+} else {
+  // Local storage
+  storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + path.extname(file.originalname));
+    }
+  });
+}
 
 const upload = multer({ storage });
 
@@ -55,8 +74,13 @@ exports.downloadDocument = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Document not found' });
     }
 
-    // Redirect to Cloudinary URL for download
-    res.redirect(document.filePath);
+    if (useCloudinary) {
+      // Redirect to Cloudinary URL for download
+      res.redirect(document.filePath);
+    } else {
+      // Use local file download
+      res.download(document.filePath, document.fileName);
+    }
   } catch (err) {
     next(err);
   }
