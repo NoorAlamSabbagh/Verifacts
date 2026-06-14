@@ -1,16 +1,7 @@
 const Document = require('../models/Document');
 const Case = require('../models/Case');
 const multer = require('multer');
-const path = require('path');
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
-});
+const { storage, cloudinary } = require('../config/cloudinary');
 
 const upload = multer({ storage });
 
@@ -64,7 +55,8 @@ exports.downloadDocument = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Document not found' });
     }
 
-    res.download(document.filePath, document.fileName);
+    // Redirect to Cloudinary URL for download
+    res.redirect(document.filePath);
   } catch (err) {
     next(err);
   }
