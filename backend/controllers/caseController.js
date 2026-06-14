@@ -11,22 +11,35 @@ exports.getCases = async (req, res, next) => {
     let query = {};
 
     if (req.user.role === 'Agent') {
+      // Agents can ONLY see their own cases - no overriding!
       query.assignedTo = req.user.id;
-    }
+      
+      if (req.query.status) {
+        query.status = req.query.status;
+      }
 
-    if (req.query.status) {
-      query.status = req.query.status;
-    }
+      if (req.query.search) {
+        query.$or = [
+          { clientName: { $regex: req.query.search, $options: 'i' } },
+          { subject: { $regex: req.query.search, $options: 'i' } }
+        ];
+      }
+    } else {
+      // Managers can filter any way
+      if (req.query.status) {
+        query.status = req.query.status;
+      }
 
-    if (req.query.assignedTo) {
-      query.assignedTo = req.query.assignedTo;
-    }
+      if (req.query.assignedTo) {
+        query.assignedTo = req.query.assignedTo;
+      }
 
-    if (req.query.search) {
-      query.$or = [
-        { clientName: { $regex: req.query.search, $options: 'i' } },
-        { subject: { $regex: req.query.search, $options: 'i' } }
-      ];
+      if (req.query.search) {
+        query.$or = [
+          { clientName: { $regex: req.query.search, $options: 'i' } },
+          { subject: { $regex: req.query.search, $options: 'i' } }
+        ];
+      }
     }
 
     const page = parseInt(req.query.page, 10) || 1;

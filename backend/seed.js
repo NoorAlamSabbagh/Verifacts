@@ -20,15 +20,28 @@ const seedData = async () => {
         role: 'Manager'
       },
       {
-        name: 'Agent User',
-        email: 'agent@example.com',
+        name: 'Agent 1',
+        email: 'agent1@example.com',
+        password: 'password123',
+        role: 'Agent'
+      },
+      {
+        name: 'Agent 2',
+        email: 'agent2@example.com',
+        password: 'password123',
+        role: 'Agent'
+      },
+      {
+        name: 'Agent 3',
+        email: 'agent3@example.com',
         password: 'password123',
         role: 'Agent'
       }
     ];
 
     await User.create(users);
-    console.log('Users added');
+    console.log('Users added: 1 Manager, 3 Agents');
+
     console.log('Seed complete!');
     process.exit();
   } catch (err) {

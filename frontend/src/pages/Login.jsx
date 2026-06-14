@@ -35,7 +35,8 @@ const Login = () => {
     if (selectedRole === 'Manager') {
       setFormData({ email: 'manager@example.com', password: 'password123' });
     } else {
-      setFormData({ email: 'agent@example.com', password: 'password123' });
+      // Default to Agent 1 for demo purposes
+      setFormData({ email: 'agent1@example.com', password: 'password123' });
     }
   }, [selectedRole]);
 
