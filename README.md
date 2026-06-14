@@ -19,7 +19,8 @@ A complete MERN stack application for tracking cases with role-based access cont
 
 - **Frontend**: React 18, Vite, Material UI (MUI) 5, React Router 6, Axios
 - **Backend**: Node.js, Express.js, Mongoose, JWT, Express Validator, Multer, Morgan
-- **Database**: MongoDB
+- **Database**: MongoDB Atlas
+- **Hosting**: Vercel (for both frontend and backend)
 
 ## 📋 Complete Workflow Guide
 
@@ -45,12 +46,12 @@ New → Assigned → In Progress → Submitted → [ Cleared | Discrepant ]
 - ✅ Update status: Assigned → In Progress → Submitted
 - ✅ Download documents from their cases
 
-## 🚀 Getting Started
+## 🚀 Getting Started (Local Development)
 
 ### Prerequisites
 
 - Node.js (v16 or later)
-- MongoDB (running locally on port 27017, or MongoDB Atlas URI)
+- MongoDB (running locally or MongoDB Atlas)
 
 ### Installation & Setup
 
@@ -65,77 +66,105 @@ New → Assigned → In Progress → Submitted → [ Cleared | Discrepant ]
    npm install
    ```
 
-3. **Configure Environment Variables**
-   - Check `.env.example` for reference
-   - File is already created at `backend/.env` with defaults
+3. **Configure Environment Variables (Backend)**
+   Copy `backend/.env.example` to `backend/.env` and update values:
+   ```env
+   NODE_ENV=development
+   PORT=5000
+   MONGODB_URI=mongodb://localhost:27017/mini-case-tracker
+   JWT_SECRET=your-secret-key-change-this-in-production
+   JWT_EXPIRE=30d
+   ```
 
 4. **Seed Test Users**
    ```bash
    npm run seed
    ```
-   This will create two test accounts in your database!
 
 5. **Start Backend Server**
    ```bash
    npm run dev
    ```
-   Backend will be running at: http://localhost:5000
+   Backend: http://localhost:5000
 
-6. **Set up Frontend (in a NEW terminal)**
+6. **Set up Frontend (New Terminal)**
    ```bash
    cd frontend
    npm install
    ```
 
-7. **Start Frontend Dev Server**
+7. **Configure Frontend (Optional)**
+   Create `frontend/.env`:
+   ```env
+   VITE_API_URL=http://localhost:5000/api
+   ```
+
+8. **Start Frontend Dev Server**
    ```bash
    npm run dev
    ```
-   Frontend will be running at: http://localhost:5173
+   Frontend: http://localhost:5174
 
 ## 🔑 Test Credentials
 
-You can now test both roles!
-
-**Manager Account:**
+**Manager Account**:
 - Email: `manager@example.com`
 - Password: `password123`
 
-**Agent Account:**
-- Email: `agent@example.com`
+**Agent Accounts**:
+- Email: `agent1@example.com` / `agent2@example.com` / `agent3@example.com`
 - Password: `password123`
 
-## 🧪 Testing the Complete Workflow
+---
 
-### Step 1: Manager creates a case
-1. Open browser tab 1 and log in as **Manager**
-2. Click "New Case"
-3. Fill in case details and submit
-4. The new case appears with status: **New**
+## 📦 Deployment to Vercel (Production)
 
-### Step 2: Manager assigns the case
-1. On the Case List, click the new case to view details
-2. Use the "Assign to Agent" dropdown to select the agent
-3. Case status automatically changes to: **Assigned**
+### Prerequisites
+- A Vercel account (https://vercel.com/signup)
+- A MongoDB Atlas account with a cluster (https://www.mongodb.com/atlas)
+- Your code pushed to a Git repository (GitHub, GitLab, or Bitbucket)
 
-### Step 3: Agent starts working on the case
-1. Open browser tab 2 and log in as **Agent**
-2. You'll see the newly assigned case in your list!
-3. Click the case to view details
-4. Click "Mark as In Progress" button
-5. Status changes to: **In Progress**
+---
 
-### Step 4: Agent works on the case
-1. Add a note in the Notes section
-2. Upload a supporting document (optional)
-3. Add a comment if needed
-4. When done, click "Mark as Submitted"
+### Step 1: Deploy Backend to Vercel
+1. **Go to Vercel Dashboard → New Project**
+2. **Import your Git repository**
+3. **Configure Project Settings**:
+   - **Project Name**: `your-app-name-backend`
+   - **Root Directory**: `backend`
+4. **Add Environment Variables (in Vercel Settings)**:
+   ```
+   NODE_ENV=production
+   MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/mini-case-tracker?retryWrites=true&w=majority
+   JWT_SECRET=your-secure-random-jwt-secret-key
+   JWT_EXPIRE=30d
+   ```
+   - Get your MongoDB Atlas connection string from the Atlas dashboard
+5. **Deploy!** (Vercel will auto-detect Node.js and deploy)
+6. **Copy your backend URL** (e.g., `https://your-app-name-backend.vercel.app`)
 
-### Step 5: Manager reviews and closes the case
-1. Back in the Manager tab, refresh the page
-2. Open the case that was just submitted
-3. Click "Mark as Cleared" to approve, or "Mark as Discrepant" to send back to Agent
-4. Audit log shows full history of all changes!
+---
+
+### Step 2: Deploy Frontend to Vercel
+1. **Create a new Vercel Project** (or use a monorepo setup)
+2. **Import the same repository**
+3. **Configure Project Settings**:
+   - **Project Name**: `your-app-name-frontend`
+   - **Root Directory**: `frontend`
+4. **Add Environment Variable**:
+   ```
+   VITE_API_URL=https://your-app-name-backend.vercel.app/api
+   ```
+5. **Deploy!** (Vercel auto-detects Vite and deploys)
+
+---
+
+### Step 3: Important Notes on File Uploads
+Vercel serverless functions have **ephemeral filesystem** - files uploaded to `/uploads` will NOT persist! For production, consider:
+- Using a cloud storage service (AWS S3, Cloudinary, Firebase Storage, etc.)
+- Updating `documentController.js` to use cloud storage instead of local filesystem
+
+---
 
 ## 📄 API Endpoints
 
@@ -172,50 +201,48 @@ mini-case-tracker/
 │   ├── middleware/          # Auth and error handling
 │   ├── models/              # Mongoose schemas
 │   ├── routes/              # API endpoints
-│   ├── uploads/             # Uploaded files storage
-│   ├── .env                 # Environment variables
-│   ├── .env.example         # Example env file
+│   ├── uploads/             # Local file storage (dev only)
+│   ├── .env                 # Local env vars
+│   ├── .env.example         # Env template
+│   ├── vercel.json          # Vercel config
 │   ├── package.json
 │   ├── seed.js              # Test data seeder
-│   └── server.js            # Entry point
+│   └── server.js            # Backend entry point
 ├── frontend/
 │   ├── src/
-│   │   ├── api.js           # Axios API client
-│   │   ├── App.jsx          # Main App component
+│   │   ├── api.js           # Axios client with env var support
+│   │   ├── App.jsx          # Main App
 │   │   ├── App.css          # Global styles
-│   │   ├── context/         # React Context (Auth)
+│   │   ├── context/         # Auth context
 │   │   ├── components/      # Reusable components
 │   │   ├── hooks/           # Custom hooks
 │   │   ├── pages/           # Page components
 │   │   └── main.jsx         # Entry point
+│   ├── .env.example         # Frontend env template
+│   ├── vercel.json          # Vercel config
 │   └── package.json
 └── README.md
 ```
 
 ## 🔐 Security Features
 
-- JWT token-based authentication with stateless sessions
-- Passwords securely hashed using bcrypt
+- JWT authentication with bcrypt password hashing
 - Server-side validation on all endpoints
-- Protected routes with role-based authorization checks
-- Strict status transition enforcement on server-side
-- Agents can only access their assigned cases
+- Strict role-based access control
+- Agents cannot see other agents' cases
+- Status transitions enforced server-side
 
-## 🎨 Design Highlights
+## 🎨 Design Library Used
 
-- Beautiful gradient background with glass-morphism effect
-- Clean, intuitive dark theme
-- Responsive design for all screen sizes
-- Smooth animations and transitions
-- Consistent design language across all pages
+- **Material-UI (MUI)**: Modern, accessible React component library
+- **MUI Icons**: Official Material Design icons for React
+- **MUI `sx` prop**: Built-in CSS-in-JS for styling
 
 ## 📝 Assumptions
 
-- MongoDB is running locally on default port 27017
-- Documents are stored locally on the server filesystem
-- Status transitions are strictly enforced on both client and server
-- Agents can only see and access cases assigned to them
-- Managers have full access to all cases
+- Documents stored locally in dev; use cloud storage for production
+- Status transitions strictly enforced
+- Role-based access control implemented both client & server-side
 
 ## ⏱️ Hours Spent
 
