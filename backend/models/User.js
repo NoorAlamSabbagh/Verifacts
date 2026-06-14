@@ -40,8 +40,10 @@ userSchema.pre('save', async function(next) {
 });
 
 userSchema.methods.getSignedJwtToken = function() {
+  // Default to 30 days if JWT_EXPIRE is not set
+  const expiresIn = process.env.JWT_EXPIRE || '30d';
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE
+    expiresIn: expiresIn
   });
 };
 
