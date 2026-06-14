@@ -142,8 +142,10 @@ New → Assigned → In Progress → Submitted → [ Cleared | Discrepant ]
    MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/mini-case-tracker?retryWrites=true&w=majority
    JWT_SECRET=your-secure-random-jwt-secret-key
    JWT_EXPIRE=30d
+   FRONTEND_URL=https://your-frontend-name.vercel.app
    ```
    - Get your MongoDB Atlas connection string from the Atlas dashboard
+   - Replace `your-frontend-name.vercel.app` with your actual deployed frontend URL
 5. **Deploy!** (Vercel will auto-detect Node.js and deploy)
 6. **Copy your backend URL** (e.g., `https://your-app-name-backend.vercel.app`)
 7. **Access API Docs in Production**: https://your-app-name-backend.vercel.app/api-docs
@@ -164,7 +166,24 @@ New → Assigned → In Progress → Submitted → [ Cleared | Discrepant ]
 
 ---
 
-### Step 3: Important Notes on File Uploads
+### Step 3: Enable Auto-Deployments (GitHub Integration)
+Vercel automatically sets up auto-deployments when you import your GitHub repo! Here's how to confirm/set it up:
+
+1. **Go to Vercel Dashboard** → Your Project → **Settings** → **Git**
+2. **Confirm your repo is connected** (it should be if you imported from GitHub)
+3. **Auto-Deployment Settings**:
+   - By default, Vercel will auto-deploy:
+     - Every time you push to `main` branch
+     - Every time you open a pull request
+     - Every time you merge a pull request
+4. **Production Branch**: Make sure it's set to `main`
+5. **Ignored Build Step**: Leave as default (optional)
+
+Now, every time you push code to your GitHub repo, Vercel will automatically build and deploy your changes! 🚀
+
+---
+
+### Step 4: Important Notes on File Uploads
 Vercel serverless functions have **ephemeral filesystem** - files uploaded to `/uploads` will NOT persist! For production, consider:
 - Using a cloud storage service (AWS S3, Cloudinary, Firebase Storage, etc.)
 - Updating `documentController.js` to use cloud storage instead of local filesystem

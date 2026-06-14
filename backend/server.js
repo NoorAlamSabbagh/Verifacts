@@ -17,7 +17,28 @@ const cases = require('./routes/cases');
 
 const app = express();
 
-app.use(cors());
+// Configure CORS
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  process.env.FRONTEND_URL, // Production frontend URL from environment variable
+  'https://verifacts-ejcm-git-main-nooralamsabbaghs-projects.vercel.app',
+];
+
+// Filter out any undefined origins from the list
+const validOrigins = allowedOrigins.filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || validOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 
 if (process.env.NODE_ENV === 'development') {
