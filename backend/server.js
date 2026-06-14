@@ -30,6 +30,11 @@ const validOrigins = allowedOrigins.filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
+    // In development mode, allow any origin for easier testing
+    if (process.env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+    // In production, only allow specific origins
     if (!origin || validOrigins.includes(origin)) {
       callback(null, true);
     } else {
